@@ -21,12 +21,18 @@ def main():
     print(x_pos)
     plt.title("Iris Parallel coordinates")
     for i in range(len(X)):
-        plt.plot(x_pos, X.iloc[i].values)
+        if Y.iloc[i] == 'Iris-setosa':
+            color = '#42b0f4'
+        elif Y.iloc[i] == 'Iris-versicolor':
+            color = '#9b41f4'
+        else:
+            color = '#f44149'
+        plt.plot(x_pos, X.iloc[i].values, color=color)
 
-    plt.plot([0,0],[min(X.iloc[:,0]),max(X.iloc[:,0])])
-    plt.plot([1,1],[min(X.iloc[:,1]),max(X.iloc[:,1])])
-    plt.plot([2,2],[min(X.iloc[:,2]),max(X.iloc[:,2])])
-    plt.plot([3,3],[min(X.iloc[:,3]),max(X.iloc[:,3])])
+    plt.plot([0,0],[min(X.iloc[:,0]),max(X.iloc[:,0])], color='k')
+    plt.plot([1,1],[min(X.iloc[:,1]),max(X.iloc[:,1])], color='k')
+    plt.plot([2,2],[min(X.iloc[:,2]),max(X.iloc[:,2])], color='k')
+    plt.plot([3,3],[min(X.iloc[:,3]),max(X.iloc[:,3])], color='k')
 
 
     plt.show()
