@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def main():
-    cars = pd.read_csv(sys.argv[1])
+    cars = pd.read_csv(sys.argv[1] )
     cars.columns = ['VehicleName','SmallSporty','SportsCar','SUV','Wagon','Minivan','Pickup', 'AWD',
                     'RWD','RetailPrice','DealerCost','EngineSize(l)','Cyl','HP','CityMPG','HwyMPG','Weight','WheelBase','Len','Width']
 
