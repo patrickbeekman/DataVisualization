@@ -10,15 +10,18 @@ def main():
     X = df.iloc[:, :4]
     Y = df.iloc[:, 4]
 
-    X = X.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
+    #X = X.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
+
+    mins = df.min(axis=0).values[:4]
+    X = X - mins
 
     x_pos = [0, 1, 2, 3]
     #x_pos = np.tile(x_pos, (len(X), 1))
     #x_pos = np.tile(x_pos, (2, 1))
     print(x_pos)
-    print(X[0:2].values)
     plt.title("Iris Parallel coordinates")
-    plt.plot(x_pos, X.iloc[0].values)
+    for i in range(len(X)):
+        plt.plot(x_pos, X.iloc[i].values)
 
     plt.plot([0,0],[min(X.iloc[:,0]),max(X.iloc[:,0])])
     plt.plot([1,1],[min(X.iloc[:,1]),max(X.iloc[:,1])])
