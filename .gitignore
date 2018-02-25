@@ -1,3 +1,4 @@
 *.csv
 *.zip
 .idea
+/hw5/mri/
