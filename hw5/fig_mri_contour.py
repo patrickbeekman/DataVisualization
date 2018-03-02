@@ -22,30 +22,39 @@ def main():
         image = np.zeros((width, height))
         for i in range(0, width):
             whole_line = str(file.readline())[2:-4].split(" ")
-            # line = file.readline()
-            # line = str(line.strip()).replace("b", "").replace("'", "")
-            # line = line.split(" ")
             for j in range(0, width):
                 image[i][j] = int(whole_line[j])
 
-    print(image.shape)
+    thresholded = np.copy(image)
+
+    thresholded[thresholded < threshold] = 0
+    thresholded[thresholded >= threshold] = 1
 
     j, i = np.meshgrid(range(height), range(width))
     i = i.reshape((-1,))
     j = j.reshape((-1,))
-    #c = df.values.flatten()
     c = image.reshape((-1,))
     plt.scatter(j, i, c=c, cmap='gray')
 
-    # df[df<threshold] = 0
-    # df[df>=threshold] = 1
-    # print(df)
+    for n in range(width-1):
+        for m in range(height-1):
+            bit_pattern(thresholded[i,j], thresholded[i+1,j], thresholded[i+1, j-1], thresholded[i, j-1])
+            # create bit pattern
+            # pass into lookup with n and m
+            print(n,",",m)
     plt.show()
-    # cells = pd.DataFrame(0, index=range(int(width)-2), columns=range(int(height)-1))
-    # print(cells)
 
 
-def lookup(val):
+def bit_pattern(first, second, third, fourth):
+    bits = 0b0
+    bits = (bits << 1) | first
+    bits = (bits << 1) | second
+    bits = (bits << 1) | third
+    bits = (bits << 1) | fourth
+    return int(bits)
+
+
+def lookup(val, i, j):
     if val == 0:
         print("lookup:", 0)
     elif val == 1:
