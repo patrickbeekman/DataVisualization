@@ -1,0 +1,8 @@
+i, j = plt.meshgrid(range(cols), range(rows)
+i = i.reshape((-1,))
+j = j.reshape((-1,))
+c = matrix.reshape((-1,))
+plt.scatter(j, i , c=c, cmap='gray')
+
+np.save('slice.npy', matrix)
+matrix = np.load('slice.npy', matrix)
