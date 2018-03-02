@@ -43,14 +43,15 @@ def main():
     j = j.reshape((-1,))
     c = image.reshape((-1,))
     #ax.scatter(j, i, c=c, cmap='gray')
-    ax.imshow(image, cmap='gray')
+    main_image = ax.imshow(image, cmap='gray')
 
     for n in range(width-1):
         for m in range(height-1):
             bit = bit_pattern(thresholded[n,m-1], thresholded[n+1,m-1], thresholded[n+1, m], thresholded[n, m])
             lookup(bit, m, n)
 
-
+    plt.title(mri_path[-11:] + " , threshold = " + str(threshold))
+    plt.colorbar(main_image)
     #plt.show()
     plt.savefig(sys.argv[3])
 
