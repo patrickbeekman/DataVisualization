@@ -234,6 +234,10 @@ def create_mesh():
     vertices = []
     normals = []
 
+    #for r in rotations:
+        #if x rotated with r equals case 1:
+        #   add offset rotated triangle coordinates to verticies and undo rotation to x
+
     # TODO: Fill in vertices and normals for each triangle here
     vertices = [[0, .5, 0], [.5, 0, 0], [0, 0, .5]]
     normals = [[1, 0, 0], [1, 0, 0], [1, 0, 0]]
