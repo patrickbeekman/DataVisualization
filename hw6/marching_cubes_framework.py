@@ -71,7 +71,7 @@ def make_cubes():
                     fp.write('\n')
 
 
-make_cubes()
+#make_cubes()
 
 
 def mouse_func(button, state, x, y):
@@ -235,6 +235,8 @@ def create_mesh():
     normals = []
 
     # TODO: Fill in vertices and normals for each triangle here
+    vertices = [[0, .5, 0], [.5, 0, 0], [0, 0, .5]]
+    normals = [[1, 0, 0], [1, 0, 0], [1, 0, 0]]
 
     vertices = np.array(vertices)
     normals = np.array(normals)

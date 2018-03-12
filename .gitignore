@@ -2,5 +2,4 @@
 *.zip
 .idea
 /hw5/mri/*
-/hw6/mri/*
-/hw6/cubes/*
+/hw6/data/*
