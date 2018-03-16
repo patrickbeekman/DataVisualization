@@ -171,9 +171,10 @@ def rotate(r, h):
 
 
 def create_mesh():
-    global vertices, normals, triangles, points, image_height, image_width, image_depth
+    global vertices, normals, triangles, points, rotations, image_height, image_width, image_depth
 
-    image_directory = sys.argv[1]
+    #image_directory = sys.argv[1]
+    image_directory = "./data/cubes/021/"
     num_images = int(sys.argv[2])
     threshold = float(sys.argv[3])
 
@@ -234,7 +235,83 @@ def create_mesh():
     vertices = []
     normals = []
 
-    #for r in rotations:
+    num = get_num_from_points()
+
+    for r in rotations:
+        if rotate(r, num) == 2:
+            print("case 1")
+            break
+        elif rotate(r, num) == 34:
+            print("case 2")
+            break
+        elif rotate(r, num) == 130:
+            print("case 3")
+            break
+        elif rotate(r, num) == 49:
+            print("case 4")
+            break
+        elif rotate(r, num) == 51:
+            print("case 5")
+            break
+        elif rotate(r, num) == 57:
+            print("case 6")
+            break
+        elif rotate(r, num) == 70:
+            print("case 7")
+            break
+        elif rotate(r, num) == 23:
+            print("case 8")
+            break
+        elif rotate(r, num) == 53:
+            print("case 9")
+            break
+        elif rotate(r, num) == 66:
+            print("case 10")
+            break
+        elif rotate(r, num) == 98:
+            print("case 11")
+            break
+        elif rotate(r, num) == 104:
+            print("case 12")
+            break
+        elif rotate(r, num) == 90:
+            print("case 13")
+            break
+        elif rotate(r, num) == 83:
+            print("case 14")
+            break
+    '''
+
+    if any_rotation(2, num):
+        print("case 1")
+    elif any_rotation(34, num):
+        print("case 2")
+    elif any_rotation(130, num):
+        print("case 3")
+    elif any_rotation(49, num):
+        print("case 4")
+    elif any_rotation(51, num):
+        print("case 5")
+    elif any_rotation(57, num):
+        print("case 6")
+    elif any_rotation(70, num):
+        print("case 7")
+    elif any_rotation(23, num):
+        print("case 8")
+    elif any_rotation(53, num):
+        print("case 9")
+    elif any_rotation(66, num):
+        print("case 10")
+    elif any_rotation(98, num):
+        print("case 11")
+    elif any_rotation(104, num):
+        print("case 12")
+    elif any_rotation(90, num):
+        print("case 13")
+    elif any_rotation(83, num):
+        print("case 14")
+    '''
+
         #if x rotated with r equals case 1:
         #   add offset rotated triangle coordinates to verticies and undo rotation to x
 
@@ -245,7 +322,15 @@ def create_mesh():
     vertices = np.array(vertices)
     normals = np.array(normals)
 
+def get_num_from_points():
+    return points[:,1][:,1].dot([128, 64, 32, 16, 8, 4, 2, 1])
 
+def any_rotation(i, num):
+    for r in rotations:
+        temp = rotate(r, num)
+        if temp == i:
+            return True
+    return False
 
 def main():
     global eye, target, up, fov_y, aspect, near, far, window, image_width, image_height, image_depth, win_id
