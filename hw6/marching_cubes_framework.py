@@ -174,7 +174,7 @@ def create_mesh():
     global vertices, normals, triangles, points, rotations, image_height, image_width, image_depth
 
     #image_directory = sys.argv[1]
-    image_directory = "./data/cubes/021/"
+    image_directory = "./data/cubes/001/"
     num_images = int(sys.argv[2])
     threshold = float(sys.argv[3])
 
@@ -240,6 +240,12 @@ def create_mesh():
     for r in rotations:
         if rotate(r, num) == 2:
             print("case 1")
+            vertices.append(np.array([0, .5, 0]).dot(r).tolist())
+            vertices.append(np.array([.5, 0, 0]).dot(r).tolist())
+            vertices.append(np.array([0, 0, .5]).dot(r).tolist())
+            normals.append([1, 0, 0])
+            normals.append([1, 0, 0])
+            normals.append([1, 0, 0])
             break
         elif rotate(r, num) == 34:
             print("case 2")
@@ -316,8 +322,8 @@ def create_mesh():
         #   add offset rotated triangle coordinates to verticies and undo rotation to x
 
     # TODO: Fill in vertices and normals for each triangle here
-    vertices = [[0, .5, 0], [.5, 0, 0], [0, 0, .5]]
-    normals = [[1, 0, 0], [1, 0, 0], [1, 0, 0]]
+    #vertices = []
+    #normals = []
 
     vertices = np.array(vertices)
     normals = np.array(normals)
