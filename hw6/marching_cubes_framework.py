@@ -173,8 +173,7 @@ def rotate(r, h):
 def create_mesh():
     global vertices, normals, triangles, points, rotations, image_height, image_width, image_depth
 
-    #image_directory = sys.argv[1]
-    image_directory = "./data/cubes/001/"
+    image_directory = sys.argv[1]
     num_images = int(sys.argv[2])
     threshold = float(sys.argv[3])
 
@@ -289,7 +288,7 @@ def create_mesh():
             triangle_cases = [np.array([(-1,-1,0),(-1,1,0),(0,-1,1)]),
                               np.array([(-1,1,0),(0,-1,1),(1,0,-1)]),
                               np.array([(-1,1,0),(1,0,-1),(0,1,-1)]),
-                              np.array([(0,-1,1),(1,0,-1),(0,0,0)])] ### LAST ARGUMENT IS WRONG
+                              np.array([(0,-1,1),(1,0,-1),(1,0,1)])] ### LAST ARGUMENT MIGHT BE WRONG
             break
         elif rotate(r, num) == 66:
             print("case 10")
@@ -331,16 +330,6 @@ def create_mesh():
         for t in triangle_rot:
             vertices.append(t)
             normals.append([1,0,0])
-
-
-        #if x rotated with r equals case 1:
-        #   add offset rotated triangle coordinates to verticies and undo rotation to x
-
-    # TODO: Fill in vertices and normals for each triangle here
-    #vertices = []
-    #normals = []
-
-
 
     vertices = np.array(vertices)
     normals = np.array(normals)
