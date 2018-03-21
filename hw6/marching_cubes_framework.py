@@ -234,108 +234,113 @@ def create_mesh():
     vertices = []
     normals = [] #[[1,0,0],[1,0,0],[1,0,0]]
 
-    triangle_cases =[]
-    num = get_num_from_points()
-    for r in rotations:
-        if rotate(r, num) == 2:
-            print("case 1")
-            triangle_cases = [np.array([(-1, 0, 1), (0, -1, 1), (-1, -1, 0)])]
-            break
-        elif rotate(r, num) == 34:
-            print("case 2")
-            triangle_cases = [np.array([(-1,-1,0),(-1,0,1),(1,-1,0)]),
-                              np.array([(-1,0,1),(1,-1,0),(1,0,1)])]
-            break
-        elif rotate(r, num) == 130:
-            print("case 3")
-            triangle_cases = [np.array([(-1,0,1), (-1,-1,0), (0,-1,1)]),
-                              np.array([(1,0,1),(0,1,1),(1,1,0)])]
-            break
-        elif rotate(r, num) == 49:
-            print("case 4")
-            triangle_cases = [np.array([(1,0,1), (-1,-1,0), (0,-1,1)]),
-                              np.array([(1,0,1), (-1,-1,0), (-1,0,-1)]),
-                              np.array([(1, 0, 1), (-1, 0, -1), (1,0,-1)])]
-            break
-        elif rotate(r, num) == 51:
-            print("case 5")
-            triangle_cases = [np.array([(-1,0,1), (-1,0,-1), (1,0,-1)]),
-                              np.array([(-1,0,1),(1,0,-1),(1,0,1)])]
-            break
-        elif rotate(r, num) == 57:
-            print("case 6")
-            triangle_cases = [np.array([(1,0,1), (-1,-1,0), (0,-1,1)]),
-                              np.array([(1,0,1), (-1,-1,0), (-1,0,-1)]),
-                              np.array([(1, 0, 1), (-1, 0, -1), (1,0,-1)]),
-                              np.array([(-1,0,1),(-1,1,0),(0,1,1)])]
-            break
-        elif rotate(r, num) == 70:
-            print("case 7")
-            triangle_cases = [np.array([(-1,0,1), (-1,-1,0), (0,-1,1)]),
-                              np.array([(1,0,1),(0,1,1),(1,1,0)]),
-                              np.array([(-1,1,0),(0,1,-1),(-1,0,-1)]),
-                              np.array([(1,-1,0),(0,-1,-1),(1,0,-1)])]
-            break
-        elif rotate(r, num) == 23:
-            print("case 8")
-            triangle_cases = [np.array([(-1, 1,0), (-1,0,1), (0,1,-1)]),
-                              np.array([(-1,0,1),(0,1,-1),(0,-1,1)]),
-                              np.array([(0,1,-1),(0,-1,1),(1,0,-1)]),
-                              np.array([(1,0,-1),(0,-1,1),(1,-1,0)])]
-            break
-        elif rotate(r, num) == 53:
-            print("case 9")
-            triangle_cases = [np.array([(-1,-1,0),(-1,1,0),(0,-1,1)]),
-                              np.array([(-1,1,0),(0,-1,1),(1,0,-1)]),
-                              np.array([(-1,1,0),(1,0,-1),(0,1,-1)]),
-                              np.array([(0,-1,1),(1,0,-1),(1,0,1)])] ### LAST ARGUMENT MIGHT BE WRONG
-            break
-        elif rotate(r, num) == 66:
-            print("case 10")
-            triangle_cases = [np.array([(-1, 0, 1), (0, -1, 1), (-1, -1, 0)]),
-                              np.array([(0,1,-1),(1,1,0),(1,0,-1)])]
-            break
-        elif rotate(r, num) == 98:
-            print("case 11")
-            triangle_cases = [np.array([(-1, -1, 0), (-1, 0, 1), (1, -1, 0)]),
-                              np.array([(-1, 0, 1), (1, -1, 0), (1, 0, 1)]),
-                              np.array([(0, 1, -1), (1, 1, 0), (1, 0, -1)])]
-            break
-        elif rotate(r, num) == 104:
-            print("case 12")
-            triangle_cases = [np.array([(0,1,-1),(1,1,0),(1,0,-1)]),
-                              np.array([(-1,1,0),(0,1,1),(-1,0,1)]),
-                              np.array([(0,-1,1),(1,0,1),(1,-1,0)])]
-            break
-        elif rotate(r, num) == 90:
-            print("case 13")
-            triangle_cases = [np.array([(-1,-1,0),(-1,1,0),(0,-1,1)]),
-                              np.array([(-1,1,0),(0,-1,1),(0,1,1)]),
-                              np.array([(1,1,0),(0,1,-1),(1,-1,0)]),
-                              np.array([(0,1,-1),(1,-1,0),(0,-1,-1)])]
-            break
-        elif rotate(r, num) == 83:
-            print("case 14")
-            triangle_cases = [np.array([(-1,0,1),(-1,0,-1),(0,-1,1)]),
-                              np.array([(-1,0,-1),(1,1,0),(0,-1,1)]),
-                              np.array([(-1,0,-1),(1,1,0),(0,1,-1)]),
-                              np.array([(1,1,0),(0,-1,1),(1,-1,0)])]
-            break
+    for i in range(image_width-1):
+        for j in range(image_height-1):
+            for k in range(image_depth-1):
+                triangle_cases =[]
+                num = get_num_from_points(i , j, k)
+                for r in rotations:
+                    if rotate(r, num) == 2:
+                        print("case 1")
+                        triangle_cases = [np.array([(-1, 0, 1), (0, -1, 1), (-1, -1, 0)])]
+                        break
+                    elif rotate(r, num) == 34:
+                        print("case 2")
+                        triangle_cases = [np.array([(-1,-1,0),(-1,0,1),(1,-1,0)]),
+                                          np.array([(-1,0,1),(1,-1,0),(1,0,1)])]
+                        break
+                    elif rotate(r, num) == 130:
+                        print("case 3")
+                        triangle_cases = [np.array([(-1,0,1), (-1,-1,0), (0,-1,1)]),
+                                          np.array([(1,0,1),(0,1,1),(1,1,0)])]
+                        break
+                    elif rotate(r, num) == 49:
+                        print("case 4")
+                        triangle_cases = [np.array([(1,0,1), (-1,-1,0), (0,-1,1)]),
+                                          np.array([(1,0,1), (-1,-1,0), (-1,0,-1)]),
+                                          np.array([(1, 0, 1), (-1, 0, -1), (1,0,-1)])]
+                        break
+                    elif rotate(r, num) == 51:
+                        print("case 5")
+                        triangle_cases = [np.array([(-1,0,1), (-1,0,-1), (1,0,-1)]),
+                                          np.array([(-1,0,1),(1,0,-1),(1,0,1)])]
+                        break
+                    elif rotate(r, num) == 57:
+                        print("case 6")
+                        triangle_cases = [np.array([(1,0,1), (-1,-1,0), (0,-1,1)]),
+                                          np.array([(1,0,1), (-1,-1,0), (-1,0,-1)]),
+                                          np.array([(1, 0, 1), (-1, 0, -1), (1,0,-1)]),
+                                          np.array([(-1,0,1),(-1,1,0),(0,1,1)])]
+                        break
+                    elif rotate(r, num) == 70:
+                        print("case 7")
+                        triangle_cases = [np.array([(-1,0,1), (-1,-1,0), (0,-1,1)]),
+                                          np.array([(1,0,1),(0,1,1),(1,1,0)]),
+                                          np.array([(-1,1,0),(0,1,-1),(-1,0,-1)]),
+                                          np.array([(1,-1,0),(0,-1,-1),(1,0,-1)])]
+                        break
+                    elif rotate(r, num) == 23:
+                        print("case 8")
+                        triangle_cases = [np.array([(-1, 1,0), (-1,0,1), (0,1,-1)]),
+                                          np.array([(-1,0,1),(0,1,-1),(0,-1,1)]),
+                                          np.array([(0,1,-1),(0,-1,1),(1,0,-1)]),
+                                          np.array([(1,0,-1),(0,-1,1),(1,-1,0)])]
+                        break
+                    elif rotate(r, num) == 53:
+                        print("case 9")
+                        triangle_cases = [np.array([(-1,-1,0),(-1,1,0),(0,-1,1)]),
+                                          np.array([(-1,1,0),(0,-1,1),(1,0,-1)]),
+                                          np.array([(-1,1,0),(1,0,-1),(0,1,-1)]),
+                                          np.array([(0,-1,1),(1,0,-1),(1,0,1)])] ### LAST ARGUMENT MIGHT BE WRONG
+                        break
+                    elif rotate(r, num) == 66:
+                        print("case 10")
+                        triangle_cases = [np.array([(-1, 0, 1), (0, -1, 1), (-1, -1, 0)]),
+                                          np.array([(0,1,-1),(1,1,0),(1,0,-1)])]
+                        break
+                    elif rotate(r, num) == 98:
+                        print("case 11")
+                        triangle_cases = [np.array([(-1, -1, 0), (-1, 0, 1), (1, -1, 0)]),
+                                          np.array([(-1, 0, 1), (1, -1, 0), (1, 0, 1)]),
+                                          np.array([(0, 1, -1), (1, 1, 0), (1, 0, -1)])]
+                        break
+                    elif rotate(r, num) == 104:
+                        print("case 12")
+                        triangle_cases = [np.array([(0,1,-1),(1,1,0),(1,0,-1)]),
+                                          np.array([(-1,1,0),(0,1,1),(-1,0,1)]),
+                                          np.array([(0,-1,1),(1,0,1),(1,-1,0)])]
+                        break
+                    elif rotate(r, num) == 90:
+                        print("case 13")
+                        triangle_cases = [np.array([(-1,-1,0),(-1,1,0),(0,-1,1)]),
+                                          np.array([(-1,1,0),(0,-1,1),(0,1,1)]),
+                                          np.array([(1,1,0),(0,1,-1),(1,-1,0)]),
+                                          np.array([(0,1,-1),(1,-1,0),(0,-1,-1)])]
+                        break
+                    elif rotate(r, num) == 83:
+                        print("case 14")
+                        triangle_cases = [np.array([(-1,0,1),(-1,0,-1),(0,-1,1)]),
+                                          np.array([(-1,0,-1),(1,1,0),(0,-1,1)]),
+                                          np.array([(-1,0,-1),(1,1,0),(0,1,-1)]),
+                                          np.array([(1,1,0),(0,-1,1),(1,-1,0)])]
+                        break
 
-    for triangle_case in triangle_cases:
-        # invert rotation
-        triangle_rot = triangle_case.dot(r.T)
-        # convert from x,y,z to i,j,k
-        triangle_rot = (triangle_rot + 1) / 2
-        for t in triangle_rot:
-            vertices.append(t)
-            normals.append([1,0,0])
+                for triangle_case in triangle_cases:
+                    # invert rotation
+                    triangle_rot = triangle_case.dot(r.T)
+                    # convert from x,y,z to i,j,k
+                    triangle_rot = (triangle_rot + 1) / 2
+                    triangle_img = triangle_rot + np.array([[i,j,k]])
+
+                    for t in triangle_img:
+                        vertices.append(t)
+                        normals.append([1,0,0])
 
     vertices = np.array(vertices)
     normals = np.array(normals)
 
-def get_num_from_points():
-    return points[:,1][:,1].dot([128, 64, 32, 16, 8, 4, 2, 1])
+def get_num_from_points(i, j, k):
+    return points[i:i+8,1][:,1].dot([128, 64, 32, 16, 8, 4, 2, 1])
 
 def any_rotation(i, num):
     for r in rotations:
