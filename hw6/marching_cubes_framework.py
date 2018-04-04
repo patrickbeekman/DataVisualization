@@ -185,7 +185,7 @@ def create_mesh():
     x = np.transpose(x, (1, 2, 0))
 
     image_width, image_height, image_depth = x.shape
-    print(image_width, image_height, image_depth)
+    print("dim:", image_width, image_height, image_depth)
 
     x = (x > threshold).astype(int)
 
@@ -200,6 +200,7 @@ def create_mesh():
                     points.append(([i, j, k], [1, 0, 0]))
     points = np.array(points)
 
+    print("done appending points")
     # using rotations here: http://www.euclideanspace.com/maths/geometry/rotations/axisAngle/examples/index.htm
     sq33 = 3 ** (1/2) / 3
     sq22 = 2 ** (1/2) / 2
@@ -233,12 +234,12 @@ def create_mesh():
     missed = 0
     vertices = []
     normals = [] #[[1,0,0],[1,0,0],[1,0,0]]
-
+    print("starting the case checking")
     for i in range(image_width-1):
         for j in range(image_height-1):
             for k in range(image_depth-1):
                 triangle_cases =[]
-                num = get_num_from_points(i , j, k)
+                num = get_num_from_points(i, j, k)
                 for r in rotations:
                     if rotate(r, num) == 2:
                         print("case 1")
@@ -324,6 +325,8 @@ def create_mesh():
                                           np.array([(-1,0,-1),(1,1,0),(0,1,-1)]),
                                           np.array([(1,1,0),(0,-1,1),(1,-1,0)])]
                         break
+                    else:
+                        print("eh nothing", i, j, k, num)
 
                 for triangle_case in triangle_cases:
                     # invert rotation
@@ -332,10 +335,17 @@ def create_mesh():
                     triangle_rot = (triangle_rot + 1) / 2
                     triangle_img = triangle_rot + np.array([[i,j,k]])
 
+                    u = triangle_img[1] - triangle_img[0]
+                    v = triangle_img[2] - triangle_img[1]
+                    normal = np.cross(u, v) / np.linalg.norm(np.cross(u, v))
+                    normal_inv = np.cross(v, u) / np.linalg.norm(np.cross(v, u))
+
                     for t in triangle_img:
                         vertices.append(t)
-                        normals.append([1,0,0])
-
+                        normals.append(normal)
+                        vertices.append(t)
+                        normals.append(normal_inv)
+    print("end create mesh")
     vertices = np.array(vertices)
     normals = np.array(normals)
 
