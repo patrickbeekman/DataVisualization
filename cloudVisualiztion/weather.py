@@ -1,6 +1,23 @@
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL import *
+import sys
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+eye = [2, 2, 10]
+target = [0, 0, 0]
+up = [0, 1, 0]
+fov_y = None
+aspect = None
+near = None
+far = None
+previous_point = None
+window = None
+button_down = None
+all_points = []
 
 
 def read_reflectivity(file_name):
@@ -105,10 +122,11 @@ def main():
     all_zz = []
     colors = []
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
     threshold = 1
 
+    #all_points = []
     for index in range(len(metadata)):
         degree_inc = 360 / 367
         ii, jj = np.meshgrid(range(len(sweeps[index])), range(len(sweeps[index][0])), indexing='ij')
@@ -118,20 +136,23 @@ def main():
         yy = yy.reshape((-1,))
         zz = [metadata[index]['radials'][0]['elevation']] * xx.shape[0]
         colors = sweeps[index].reshape((-1,))
-        delete_indicies = []
-        for i, val in enumerate(sweeps[index].reshape((-1,))):
-            if val < threshold:
-                delete_indicies.append(i)
-        new_xx = np.delete(xx, delete_indicies)
-        new_yy = np.delete(yy, delete_indicies)
-        new_zz = np.delete(zz, delete_indicies)
-        new_colors = np.delete(colors, delete_indicies)
-        ax.scatter(new_xx, new_yy, new_zz, c=new_colors, cmap='viridis')
+        # delete_indicies = []
+        # for i, val in enumerate(sweeps[index].reshape((-1,))):
+        #     if val < threshold:
+        #         delete_indicies.append(i)
+        # new_xx = np.delete(xx, delete_indicies)
+        # new_yy = np.delete(yy, delete_indicies)
+        # new_zz = np.delete(zz, delete_indicies)
+        # all_points.extend(list(zip(new_xx, new_yy, new_zz)))
+        all_points.extend(list(zip(xx, yy, zz)))
+        #new_colors = np.delete(colors, delete_indicies)
+        #ax.scatter(new_xx, new_yy, new_zz, c=new_colors, cmap='viridis')
 
     #plt.scatter(xx, yy, zz)#, c=colors, cmap='viridis')
-    plt.savefig("CircularVisualization3D-all.png")
+    #plt.savefig("CircularVisualization3D-all.png")
     #plt.show()
 
+    start()
     # Next step is visualizing in 3d using all 9 sweeps
     # z = r * sin(alpha) where alpha is the angle upwards from origin at sweep 0
 
@@ -143,6 +164,125 @@ def main():
     # plt.ylabel('distance')
     # plt.show()
 
+
+def mouse_func(button, state, x, y):
+    global previous_point, button_down
+    print(button_down, state, x, y)
+    previous_point = (x * 2 / window[0], -y * 2 / window[1])
+    if button == GLUT_LEFT_BUTTON:
+        if state == GLUT_DOWN:
+            button_down = 'left'
+        elif state == GLUT_UP:
+            button_down = None
+    elif button == GLUT_RIGHT_BUTTON:
+        if state == GLUT_DOWN:
+            button_down = 'right'
+        elif state == GLUT_UP:
+            button_down = None
+
+
+def motion_func(x, y):
+    # this function modeled after modeler.PerspectiveCamera.orbit() function written by 'ags' here:
+    # http://www.cs.cornell.edu/courses/cs4620/2008fa/asgn/model/model-fmwk.zip
+    global previous_point, eye
+    x *= 2 / window[0]
+    y *= -2 / window[1]
+    if button_down == 'left':
+        mouse_delta = [x - previous_point[0], y - previous_point[1]]
+        neg_gaze = [eye[0] - target[0], eye[1] - target[1], eye[2] - target[2]]
+        dist = sum([a**2 for a in neg_gaze]) ** (1/2)
+        neg_gaze = [a / dist for a in neg_gaze]
+        azimuth = math.atan2(neg_gaze[0], neg_gaze[2])
+        elevation = math.atan2(neg_gaze[1], (neg_gaze[0]**2 + neg_gaze[2]**2)**(1/2))
+        azimuth = (azimuth - mouse_delta[0]) % (2 * math.pi)
+        elevation = max(-math.pi * .495, min(math.pi * .495, elevation - mouse_delta[1]))
+        neg_gaze[0] = math.sin(azimuth) * math.cos(elevation)
+        neg_gaze[1] = math.sin(elevation)
+        neg_gaze[2] = math.cos(azimuth) * math.cos(elevation)
+        mag = sum([a**2 for a in neg_gaze]) ** (1/2)
+        neg_gaze = [a / mag * dist for a in neg_gaze]
+        new_eye = [a + b for a, b in zip(target, neg_gaze)]
+        eye = new_eye
+        glutPostRedisplay()
+    elif button_down == 'right':
+        mouse_delta_y = y - previous_point[1]
+        neg_gaze = [eye[0] - target[0], eye[1] - target[1], eye[2] - target[2]]
+        dist = sum([a**2 for a in neg_gaze]) ** (1/2)
+        new_dist = dist - 5 * mouse_delta_y
+        new_neg_gaze = [a / dist * new_dist for a in neg_gaze]
+        new_eye = [a + b for a, b in zip(target, new_neg_gaze)]
+        eye = new_eye
+        glutPostRedisplay()
+
+    previous_point = (x, y)
+
+
+def start():
+    global eye, target, up, fov_y, aspect, near, far, window
+
+    window = (400, 400)
+    fov_y = 40
+    near = .1
+    far = 50
+
+    aspect = window[0] / window[1]
+    light_position = [10., 4., 10., 1.]
+    light_color = [0.8, 1.0, 0.8, 1.0]
+
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutInitWindowSize(window[0], window[1])
+    glutCreateWindow('WeatherPattern')
+
+    glClearColor(0., 0., 0., 1.)
+    glShadeModel(GL_SMOOTH)
+    glEnable(GL_CULL_FACE)
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_LIGHTING)
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color)
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
+    glEnable(GL_LIGHT0)
+    glutDisplayFunc(display)
+
+    glutMouseFunc(mouse_func)
+    glutMotionFunc(motion_func)
+
+    glutMainLoop()
+
+
+def display():
+    global eye, target, up, fov_y, aspect, near, far
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(fov_y, aspect, near, far)
+
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    gluLookAt(eye[0], eye[1], eye[2],
+              target[0], target[1], target[2],
+              up[0], up[1], up[2])
+
+    # color = [1.0, 0., 0., 1.]
+    # glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color)
+
+    glBegin(GL_POINTS)
+    for point in all_points:
+        glVertex3fv(list(point))
+    glEnd()
+
+    # glBegin(GL_TRIANGLES)
+    # for v, n in zip(vertices, normals):
+    #     glNormal3fv(list(n))
+    #     glVertex3fv(list(v))
+    #
+    # glEnd()
+
+    glutSwapBuffers()
 
 if __name__ == '__main__':
     main()
