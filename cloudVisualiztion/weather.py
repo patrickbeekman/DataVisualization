@@ -122,37 +122,41 @@ def main():
     all_zz = []
     colors = []
 
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection='3d')
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
     threshold = 1
 
     #all_points = []
     for index in range(len(metadata)):
-        degree_inc = 360 / 367
+        degree_inc = 360 / metadata[index]['sweep']['num_radials']
         ii, jj = np.meshgrid(range(len(sweeps[index])), range(len(sweeps[index][0])), indexing='ij')
         xx = (ii + 1) * np.cos(np.deg2rad(jj * degree_inc))
         yy = (ii + 1) * np.sin(np.deg2rad(jj * degree_inc))
         xx = xx.reshape((-1,))
         yy = yy.reshape((-1,))
-        zz = [metadata[index]['radials'][0]['elevation']] * xx.shape[0]
+        elevations = [metadata[index]['radials'][0]['elevation']] * xx.shape[0]
         colors = sweeps[index].reshape((-1,))
-        # delete_indicies = []
-        # for i, val in enumerate(sweeps[index].reshape((-1,))):
-        #     if val < threshold:
-        #         delete_indicies.append(i)
-        # new_xx = np.delete(xx, delete_indicies)
-        # new_yy = np.delete(yy, delete_indicies)
-        # new_zz = np.delete(zz, delete_indicies)
-        # all_points.extend(list(zip(new_xx, new_yy, new_zz)))
-        all_points.extend(list(zip(xx, yy, zz)))
-        #new_colors = np.delete(colors, delete_indicies)
-        #ax.scatter(new_xx, new_yy, new_zz, c=new_colors, cmap='viridis')
+        delete_indicies = []
+        for i, val in enumerate(sweeps[index].reshape((-1,))):
+            if val < threshold:
+                delete_indicies.append(i)
+        new_xx = np.delete(xx, delete_indicies)
+        new_yy = np.delete(yy, delete_indicies)
+        new_elv = np.delete(elevations, delete_indicies)
+        new_zz = np.zeros(len(new_elv))
+        for ind in range(len(new_elv)):
+            new_zz[ind] = np.sqrt(np.square(new_xx[ind]) + np.square(new_yy[ind])) * np.tan(np.deg2rad(new_elv[ind]))
+
+        #all_points.extend(list(zip(new_xx, new_yy, new_zz)))
+        #all_points.extend(list(zip(xx, yy, zz)))
+        new_colors = np.delete(colors, delete_indicies)
+        ax.scatter(new_xx, new_yy, new_zz, c=new_colors, cmap='viridis')
 
     #plt.scatter(xx, yy, zz)#, c=colors, cmap='viridis')
-    #plt.savefig("CircularVisualization3D-all.png")
-    #plt.show()
+    #plt.savefig("CircularVisualization3D-all2.png")
+    plt.show()
 
-    start()
+    #start()
     # Next step is visualizing in 3d using all 9 sweeps
     # z = r * sin(alpha) where alpha is the angle upwards from origin at sweep 0
 
