@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def read_reflectivity(file_name):
@@ -91,22 +92,56 @@ def main():
     sweeps, metadata = read_reflectivity(file_name)
 
     # 367 different points, divide by 360 to separate them equally.
-    degree_inc = 360/367
-    ii, jj = np.meshgrid(range(len(sweeps[0])), range(len(sweeps[0][0])), indexing='ij')
-    xx = (ii + 1) * np.cos(np.deg2rad(jj * degree_inc))
-    yy = (ii + 1) * np.sin(np.deg2rad(jj * degree_inc))
-    xx = xx.reshape((-1,))
-    yy = yy.reshape((-1,))
-    plt.scatter(xx, yy, c=sweeps[0].reshape((-1,)), cmap='viridis')
-    plt.savefig("CircularVisualization.png")
+    # degree_inc = 360/367
+    # ii, jj = np.meshgrid(range(len(sweeps[0])), range(len(sweeps[0][0])), indexing='ij')
+    # xx = (ii + 1) * np.cos(np.deg2rad(jj * degree_inc))
+    # yy = (ii + 1) * np.sin(np.deg2rad(jj * degree_inc))
+    # xx = xx.reshape((-1,))
+    # yy = yy.reshape((-1,))
+    # zz = [metadata[index]['radials'][0]['elevation']] * xx.shape[0]
+
+    all_xx = []
+    all_yy = []
+    all_zz = []
+    colors = []
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    threshold = 1
+
+    for index in range(len(metadata)):
+        degree_inc = 360 / 367
+        ii, jj = np.meshgrid(range(len(sweeps[index])), range(len(sweeps[index][0])), indexing='ij')
+        xx = (ii + 1) * np.cos(np.deg2rad(jj * degree_inc))
+        yy = (ii + 1) * np.sin(np.deg2rad(jj * degree_inc))
+        xx = xx.reshape((-1,))
+        yy = yy.reshape((-1,))
+        zz = [metadata[index]['radials'][0]['elevation']] * xx.shape[0]
+        colors = sweeps[index].reshape((-1,))
+        delete_indicies = []
+        for i, val in enumerate(sweeps[index].reshape((-1,))):
+            if val < threshold:
+                delete_indicies.append(i)
+        new_xx = np.delete(xx, delete_indicies)
+        new_yy = np.delete(yy, delete_indicies)
+        new_zz = np.delete(zz, delete_indicies)
+        new_colors = np.delete(colors, delete_indicies)
+        ax.scatter(new_xx, new_yy, new_zz, c=new_colors, cmap='viridis')
+
+    #plt.scatter(xx, yy, zz)#, c=colors, cmap='viridis')
+    plt.savefig("CircularVisualization3D-all.png")
+    #plt.show()
+
+    # Next step is visualizing in 3d using all 9 sweeps
+    # z = r * sin(alpha) where alpha is the angle upwards from origin at sweep 0
 
     sweep = 0
-    plt.clf()
-    plt.imshow(sweeps[sweep])
-    plt.colorbar()
-    plt.xlabel('angle')
-    plt.ylabel('distance')
-    plt.show()
+    # plt.clf()
+    # plt.imshow(sweeps[sweep])
+    # plt.colorbar()
+    # plt.xlabel('angle')
+    # plt.ylabel('distance')
+    # plt.show()
 
 
 if __name__ == '__main__':
