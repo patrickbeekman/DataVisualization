@@ -143,9 +143,11 @@ def main():
         new_xx = np.delete(xx, delete_indicies)
         new_yy = np.delete(yy, delete_indicies)
         new_elv = np.delete(elevations, delete_indicies)
+        dist = np.delete(ii.reshape((-1,)), delete_indicies)
         new_zz = np.zeros(len(new_elv))
         for ind in range(len(new_elv)):
-            new_zz[ind] = np.sqrt(np.square(new_xx[ind]) + np.square(new_yy[ind])) * np.tan(np.deg2rad(new_elv[ind]))
+            new_zz[ind] = dist[ind]+1 * np.sin(np.deg2rad(new_elv[ind]))
+        #np.sqrt(np.square(new_xx[ind]) + np.square(new_yy[ind]))
 
         #all_points.extend(list(zip(new_xx, new_yy, new_zz)))
         #all_points.extend(list(zip(xx, yy, zz)))
@@ -153,8 +155,8 @@ def main():
         ax.scatter(new_xx, new_yy, new_zz, c=new_colors, cmap='viridis')
 
     #plt.scatter(xx, yy, zz)#, c=colors, cmap='viridis')
-    #plt.savefig("CircularVisualization3D-all2.png")
-    plt.show()
+    plt.savefig("CircularVisualization3D-correct.png")
+    #plt.show()
 
     #start()
     # Next step is visualizing in 3d using all 9 sweeps
@@ -224,10 +226,10 @@ def motion_func(x, y):
 def start():
     global eye, target, up, fov_y, aspect, near, far, window
 
-    window = (400, 400)
-    fov_y = 40
+    window = (600, 600)
+    fov_y = 200
     near = .1
-    far = 50
+    far = 300
 
     aspect = window[0] / window[1]
     light_position = [10., 4., 10., 1.]
@@ -271,8 +273,8 @@ def display():
               target[0], target[1], target[2],
               up[0], up[1], up[2])
 
-    # color = [1.0, 0., 0., 1.]
-    # glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color)
+    color = [1.0, 0., 0., 1.]
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color)
 
     glBegin(GL_POINTS)
     for point in all_points:
