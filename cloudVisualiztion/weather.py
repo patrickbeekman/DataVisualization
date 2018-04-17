@@ -17,6 +17,9 @@ far = None
 previous_point = None
 window = None
 button_down = None
+image_width = None
+image_height = None
+image_depth = None
 all_points = []
 
 
@@ -104,6 +107,7 @@ def read_reflectivity(file_name):
 
 
 def main():
+    global image_width, image_height, image_depth, all_points
     index = 121
     file_name = './data/weather/%d.RFLCTVTY' % index
     sweeps, metadata = read_reflectivity(file_name)
@@ -153,6 +157,13 @@ def main():
         #all_points.extend(list(zip(xx, yy, zz)))
         new_colors = np.delete(colors, delete_indicies)
         #ax.scatter(new_xx, new_yy, new_zz, c=new_colors, cmap='viridis')
+    col_min = new_colors.min()
+    col_max = new_colors.max()
+    rgb_colors = [rgb(col_min, col_max, x) for x in new_colors]
+    all_points = list(zip(all_points, rgb_colors))
+    image_width = new_xx.max()
+    image_height = new_yy.max()
+    image_depth = new_zz.max()
 
     #plt.scatter(xx, yy, zz)#, c=colors, cmap='viridis')
     #plt.savefig("CircularVisualization3D-correct.png")
@@ -169,6 +180,16 @@ def main():
     # plt.xlabel('angle')
     # plt.ylabel('distance')
     # plt.show()
+
+
+# got from John1024: https://stackoverflow.com/questions/20792445/calculate-rgb-value-for-a-range-of-values-to-create-heat-map
+def rgb(minimum, maximum, value):
+    minimum, maximum = float(minimum), float(maximum)
+    ratio = 2 * (value-minimum) / (maximum - minimum)
+    b = int(max(0, 255*(1 - ratio)))
+    r = int(max(0, 255*(ratio - 1)))
+    g = 255 - b - r
+    return list([r, g, b])
 
 
 def mouse_func(button, state, x, y):
@@ -224,34 +245,42 @@ def motion_func(x, y):
 
 
 def start():
-    global eye, target, up, fov_y, aspect, near, far, window
+    global eye, target, up, fov_y, aspect, near, far, window, image_width, image_height, image_depth, win_id
 
-    window = (600, 600)
-    fov_y = 100
-    near = 1
-    far = 200
+    eye = [(image_width-1)/2, (image_height-1)/2, 2*image_depth]
+    target = [(image_width-1)/2, (image_height-1)/2, (image_depth-1)/2]
+    up = [0, 1, 0]
+
+    window = (800, 800)
+    fov_y = 40
+    near = .1
+    far = 1000
 
     aspect = window[0] / window[1]
-    light_position = [10., 4., 10., 1.]
-    light_color = [0.8, 1.0, 0.8, 1.0]
+    light_position = eye
+    light_color = [100.0, 100.0, 100.0, 1.0]
 
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
     glutInitWindowSize(window[0], window[1])
-    glutCreateWindow('WeatherPattern')
+    win_id = glutCreateWindow('cubes')
 
     glClearColor(0., 0., 0., 1.)
     glShadeModel(GL_SMOOTH)
-    glEnable(GL_CULL_FACE)
+    # glEnable(GL_CULL_FACE)
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_LIGHTING)
     glLightfv(GL_LIGHT0, GL_POSITION, light_position)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color)
-    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
-    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
-    glEnable(GL_LIGHT0)
-    glutDisplayFunc(display)
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0)
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0)
 
+    glEnable(GL_PROGRAM_POINT_SIZE)
+
+    glEnable(GL_LIGHT0)
+
+    # callbacks
+    glutDisplayFunc(display)
     glutMouseFunc(mouse_func)
     glutMotionFunc(motion_func)
 
@@ -259,7 +288,7 @@ def start():
 
 
 def display():
-    global eye, target, up, fov_y, aspect, near, far
+    global eye, target, up, fov_y, aspect, near, far, vertices, points, normals
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -273,23 +302,30 @@ def display():
               target[0], target[1], target[2],
               up[0], up[1], up[2])
 
-    color = [1.0, 0., 0., 1.]
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color)
+    glLightfv(GL_LIGHT0, GL_POSITION, eye)
 
-    glEnable(GL_PROGRAM_POINT_SIZE)
-    gl_PointSize = 10
+    color = [1.0, 1.0, 0.0, 1.]
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color)
+    # glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color)
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0)
 
-    glBegin(GL_POINTS)
-    for point in all_points:
-        glVertex3fv(list(point))
-    glEnd()
-
+    glDisable(GL_LIGHTING)
     # glBegin(GL_TRIANGLES)
-    # for v, n in zip(vertices, normals):
-    #     glNormal3fv(list(n))
-    #     glVertex3fv(list(v))
+    # for i in range(len(vertices)):
+    #     glColor3fv([1, 1, 1])
+    #     glNormal3fv(normals[i, :])
+    #     glVertex3fv(vertices[i, :])
     #
     # glEnd()
+
+    glPointSize(10)
+    glBegin(GL_POINTS)
+    for point, c in all_points:
+        glColor3fv(c)
+        glVertex3fv(point)
+    glEnd()
+    glEnable(GL_LIGHTING)
 
     glutSwapBuffers()
 
